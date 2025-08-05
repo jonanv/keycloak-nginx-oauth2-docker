@@ -21,7 +21,18 @@ curl -H "Content-Type: application/x-www-form-urlencoded" -d "client_id=admin-cl
 - oauth2-proxy es el nombre del client creado en Keycloak.
 - random-32-byte-secret== lo puedes generar con este comando:
 
-bash
-````
-head -c24 /dev/urandom | base64
+```bash
+openssl rand -base64 24
+```
+
+# Crea un Realm llamado: <REALM-NAME>
+
+- Dentro del Realm <REALM-NAME>, crea un Client:
+- Client ID: oauth2-proxy
+- Client Protocol: openid-connect
+- Access Type: confidential
+- Root URL: http://localhost:8040
+- Valid Redirect URIs:
+```bash
+http://localhost:8040/oauth2/callback
 ```

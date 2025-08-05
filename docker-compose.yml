@@ -29,8 +29,6 @@ services:
       retries: 10               # retries: lo intenta hasta 10 veces antes de marcarlo como "unhealthy".  
 
   nginx:
-    depends_on:
-      - keycloak
     container_name: nginx
     image: nginx:stable
     volumes:
@@ -39,6 +37,8 @@ services:
     ports:
       - ${NGINX_ACCESS_PORT}:80
     restart: always
+    depends_on:
+      - oauth2-proxy
     networks:
       - backend-ifco
 
@@ -48,15 +48,15 @@ services:
     environment:
       OAUTH2_PROXY_PROVIDER: keycloak
       OAUTH2_PROXY_CLIENT_ID: ${OAUTH2_PROXY_CLIENT_ID}
-      OAUTH2_PROXY_CLIENT_SECRET: ${OAUTH2_PROXY_CLIENT_SECRET}
       OAUTH2_PROXY_COOKIE_SECRET: ${AUTH2_PROXY_COOKIE_SECRET}
+      OAUTH2_PROXY_CLIENT_SECRET: ${OAUTH2_PROXY_CLIENT_SECRET}
       OAUTH2_PROXY_REDIRECT_URL: http://localhost:8040/oauth2/callback
       OAUTH2_PROXY_OIDC_ISSUER_URL: "http://keycloak:8080/realms/master"
       OAUTH2_PROXY_EMAIL_DOMAINS: "*"
-      OAUTH2_PROXY_UPSTREAMS: "http://host.docker.internal:8080/" # Tu backend
+      OAUTH2_PROXY_UPSTREAMS: http://host.docker.internal:8080/ # Tu backend
       OAUTH2_PROXY_HTTP_ADDRESS: "0.0.0.0:4180"
       OAUTH2_PROXY_KEYCLOAK_REALM: ${REALM_NAME}
-      OAUTH2_PROXY_KEYCLOAK_URL: http://keycloak:8080/realms/${REALM_NAME}
+      OAUTH2_PROXY_KEYCLOAK_URL: http://keycloak:8080/realms/master
       OAUTH2_PROXY_SKIP_PROVIDER_BUTTON: "true"
     depends_on:
       - keycloak
